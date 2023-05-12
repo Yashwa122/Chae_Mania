@@ -13,19 +13,35 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	[SerializeField] GameObject cameraHolder;
 
-	[SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime;
-
 	[SerializeField] Item[] items;
 
 	int itemIndex;
 	int previousItemIndex = -1;
 
-	float verticalLookRotation;
-	bool grounded;
-	Vector3 smoothMoveVelocity;
-	Vector3 moveAmount;
+    [Header("Movement")]
+    public float moveSpeed;
 
-	Rigidbody rb;
+    float horizontalInput;
+    float verticalInput;
+
+    Vector3 moveDirection;
+	public float groundDrag;
+
+	public float jumpForce;
+	public float jumpCooldown;
+	public float airMultiplier;
+	bool readyToJump;
+
+	[Header("Keybinds")]
+	public KeyCode jumpKey = KeyCode.Space;
+
+	[Header("Ground Check")]
+	public float playerHeight;
+	public LayerMask whatIsGround;
+	bool grounded;
+    public Transform orientaion;
+
+    Rigidbody rb;
 
 	PhotonView PV;
 
@@ -44,6 +60,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void Start()
 	{
+		rb.GetComponent<Rigidbody>();
+		rb.freezeRotation = true;
+
 		if(PV.IsMine)
 		{
 			EquipItem(0);
@@ -58,12 +77,22 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void Update()
 	{
+		grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+
+		if(grounded)
+		{
+			rb.drag = groundDrag;
+		}
+		else
+		{
+			rb.drag = 0;
+		}
+
+		MyInput();
+		SpeedControl();
+
 		if(!PV.IsMine)
 			return;
-
-		Look();
-		Move();
-		Jump();
 
 		for(int i = 0; i < items.Length; i++)
 		{
@@ -108,32 +137,59 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		}
 	}
 
-	void Look()
+	private void MyInput()
 	{
-		transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
+		horizontalInput = Input.GetAxisRaw("Horizontal");
+		verticalInput = Input.GetAxisRaw("Vertical");
 
-		verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-		verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
-
-		cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
-	}
-
-	void Move()
-	{
-		Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-
-		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
-	}
-
-	void Jump()
-	{
-		if(Input.GetKeyDown(KeyCode.Space) && grounded)
+		if(Input.GetKey(jumpKey) && readyToJump && grounded)
 		{
-			rb.AddForce(transform.up * jumpForce);
+			readyToJump = false;
+
+			Jump();
+
+			Invoke(nameof(ResetJump), jumpCooldown);
 		}
 	}
 
-	void EquipItem(int _index)
+	private void MovePlayer()
+	{
+		moveDirection = orientaion.forward * verticalInput + orientaion.right * horizontalInput;
+
+		if(grounded)
+		{
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        }
+		else if(!grounded)
+		{
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+        }
+	}
+
+	private void SpeedControl()
+	{
+		Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+		if(flatVel.magnitude > moveSpeed)
+		{
+			Vector3 limitedVel = flatVel.normalized * moveSpeed;
+			rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+		}
+	}
+
+	private void Jump()
+	{
+		rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+		rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+	}
+
+    private void ResetJump()
+    {
+        readyToJump = true;
+    }
+
+    void EquipItem(int _index)
 	{
 		if(_index == previousItemIndex)
 			return;
@@ -175,7 +231,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		if(!PV.IsMine)
 			return;
 
-		rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
+		MovePlayer();
 	}
 
 	public void TakeDamage(float damage)

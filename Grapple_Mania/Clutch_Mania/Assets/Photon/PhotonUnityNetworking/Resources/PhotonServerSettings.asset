@@ -13,15 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-<<<<<<< Updated upstream
-    AppIdRealtime: '6e78eae7-77c5-42d7-ad68-328b9b090643 '
-=======
-<<<<<<< HEAD
     AppIdRealtime: 6e78eae7-77c5-42d7-ad68-328b9b090643
-=======
-    AppIdRealtime: '6e78eae7-77c5-42d7-ad68-328b9b090643 '
->>>>>>> c01b6a40ec5941e898be7e97edfdcaebe0e93ca2
->>>>>>> Stashed changes
     AppIdChat: 
     AppIdVoice: 
     AppVersion: 
@@ -46,11 +38,4 @@ MonoBehaviour:
   - RPC_TakeDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
   DevRegionSetOnce: 1
-=======
->>>>>>> Stashed changes
-  DevRegionSetOnce: 0
->>>>>>> c01b6a40ec5941e898be7e97edfdcaebe0e93ca2

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 
 
 // Dave MovementLab - GrapplingRope
@@ -18,7 +17,7 @@ using Photon.Pun;
 /// -> if you don't understand the code, just watch the tutorial
 
 
-public class GrapplingRope_MLab : MonoBehaviourPunCallbacks
+public class GrapplingRope_MLab : MonoBehaviour
 {
     [Header("References")]
     public Grappling grappling;
@@ -35,13 +34,10 @@ public class GrapplingRope_MLab : MonoBehaviourPunCallbacks
     private Spring_MLab spring; // a custom script that returns the values needed for the animation
     private LineRenderer lr;
     private Vector3 currentGrapplePosition;
-    public PhotonView view;
-    
 
     private void Awake()
     {
         // get references
-
         lr = GetComponent<LineRenderer>();
         spring = new Spring_MLab();
         spring.SetTarget(0);
@@ -50,9 +46,7 @@ public class GrapplingRope_MLab : MonoBehaviourPunCallbacks
     //Called after Update
     private void LateUpdate()
     {
-        if (view.IsMine)
-            DrawRope();
-        
+        DrawRope();
     }
 
     void DrawRope()

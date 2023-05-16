@@ -12,12 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de965f2e710c1c489ead8e62cd25da0, type: 3}
   m_Name: Switch Painting Data
   m_EditorClassIdentifier: 
-  hullData: {fileID: 0}
+  hullData: {fileID: 11400000, guid: f28e6eb16d88b4149905c02f67bf2131, type: 2}
   sourceMesh: {fileID: -3389986748748917119, guid: d810371ab2c6dcd439f993db93d1422d,
     type: 3}
-  activeHull: -1
+  activeHull: 0
   faceThickness: 0.1
-  hulls: []
+  hulls:
+  - name: Hull 1
+    isVisible: 1
+    type: 1
+    colour: {r: 0, g: 1, b: 1, a: 0.7}
+    material: {fileID: 0}
+    enableInflation: 0
+    inflationAmount: 0.01
+    boxFitMethod: 1
+    isTrigger: 0
+    isChildCollider: 0
+    selectedFaces: 8f0e0000680e00006b0e0000710e0000730e0000830e0000390f00008a0e00009c0e0000950e0000940e0000930e0000960e0000850e00007f0e00007d0e00009a1900007b0e0000790e00007e0e0000800e0000c91b0000860e0000770e0000780e00007a0e0000810e00007c0e0000720e0000d20e0000cd0e0000d30e0000d40e0000cc0e0000d00e0000690e0000970e00009b0e0000331900002f1900003019000031190000cc190000
+    collisionMesh: {fileID: 0}
+    faceCollisionMesh: {fileID: 0}
+    faceBoxCenter: {x: 0, y: 0, z: 0}
+    faceBoxSize: {x: 0, y: 0, z: 0}
+    faceAsBoxRotation: {x: 0, y: 0, z: 0, w: 0}
+    autoMeshes: []
+    hasColliderError: 0
+    numColliderFaces: 0
+    noInputError: 0
   autoHullPreset: 1
   vhacdParams:
     concavity: 0.001
